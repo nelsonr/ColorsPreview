@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colors Preview</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            /* outline: 1px dashed pink; */
+        }
+        
+        html, body {
+            margin: 0;
+            font-family: sans-serif;
+        }
+        
+        main {
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        section.colors {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        textarea {
+            display: block;
+            width: 100%;
+            min-width: 100%;
+            max-width: 100%;
+        }
+
+        ul {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, 100px);
+            grid-gap: 20px;
+            overflow: auto;
+            height: 100%;
+        }
+
+        li {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            color: #FFF;
+            text-shadow: 1px 1px 1px #000;
+            font-size: 0.9em;
+            width: 100px;
+            height: 100px;
+            border-radius: 6px;
+            box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        li span {
+            display: block;
+            width: 100%;
+            overflow: hidden;
+            text-align: center;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        li::after {
+            content: attr(data-color);
+            display: none;
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 1;
+        }
+
+        li:hover::after {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section>
+            <label for="">Paste Color Codes (one per line, in any format)</label>
+            <textarea name="" id="" cols="30" rows="10"></textarea>
+        </section>
+
+        <section class="colors">
+            <h3>Preview</h3>
+            <ul></ul>
+        </section>
+    </main>
+
+    <script>
+        const COLORS_STORAGE_KEY = 'colors';
+
+        const textarea = document.querySelector('textarea');
+        const colorsList = document.querySelector('.colors ul');
+        const colorsListTitle = document.querySelector('.colors h3');
+        
+        function generateColorPreview (colorCode) {
+            const span = document.createElement('span');
+            span.textContent = colorCode;
+
+            const li = document.createElement('li');
+            li.style.backgroundColor = colorCode;
+            li.setAttribute('data-color', colorCode);
+
+            li.appendChild(span);
+
+            return li;
+        }
+
+        function renderColorsPreview (colors) {
+            const colorsFragment = document.createDocumentFragment();
+
+            colors.forEach(function (color) {
+                colorsFragment.append(generateColorPreview(color));
+            });
+
+            colorsListTitle.textContent = `Preview (${colors.length} colors)`;
+            
+            colorsList.innerHTML = "";
+            colorsList.appendChild(colorsFragment);
+
+            localStorage.setItem(COLORS_STORAGE_KEY, textarea.value);
+        }
+
+        textarea.addEventListener('input', function () {
+            if (textarea.value.length > 0) {
+                renderColorsPreview(textarea.value.split('\n'));
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', function () {
+            textarea.value = localStorage.getItem(COLORS_STORAGE_KEY);
+
+            if (textarea.value.length > 0) {
+                renderColorsPreview(textarea.value.split('\n'));
+            }
+        });
+    </script>
+</body>
+</html>
