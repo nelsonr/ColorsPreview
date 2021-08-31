@@ -113,7 +113,7 @@
         const colorsListTitle = document.querySelector('.colors h3');
 
         function extractUniqueColors(str) {
-            const colorRegex = /(#[a-fA-F0-9]{3,}|rgba?\(.*\))/gm;
+            const colorRegex = /(#[a-fA-F0-9]{3,}|rgba?\([\d,\.]*\))/gm;
             const colors = [];
 
             let match;
